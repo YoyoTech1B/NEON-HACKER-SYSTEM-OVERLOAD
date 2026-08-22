@@ -1,3 +1,4 @@
+// PLAYER SYSTEM VERSION 2
 /* =========================================================
    NEON HACKER: SYSTEM OVERLOAD
    GAME ENGINE
@@ -95,6 +96,7 @@ let game;
 let scene;
 
 let player;
+let playerSystem;
 
 let cursors;
 let wasd;
@@ -573,130 +575,20 @@ function createWall(x, y, width, height) {
 
 function createPlayer() {
 
-    player = scene.physics.add.sprite(
-        150,
-        580
-    );
-
-    player.setSize(
-        28,
-        28
-    );
-
-    player.setCollideWorldBounds(
-        true
-    );
-
-    player.setDepth(10);
-
-
-    /* PLAYER BODY */
-
-    const graphics = scene.add.graphics();
-
-    graphics.fillStyle(
-        0x00aaff,
-        1
-    );
-
-    graphics.fillCircle(
-        0,
-        0,
-        18
-    );
-
-    graphics.lineStyle(
-        2,
-        0x8ceaff,
-        1
-    );
-
-    graphics.strokeCircle(
-        0,
-        0,
-        18
-    );
-
-    graphics.fillStyle(
-        0xffffff,
-        1
-    );
-
-    graphics.fillCircle(
-        5,
-        -5,
-        4
-    );
-
-
-    const textureKey = "playerTexture";
-
-    if (!scene.textures.exists(textureKey)) {
-
-        const canvas = document.createElement("canvas");
-
-        canvas.width = 40;
-        canvas.height = 40;
-
-        const ctx = canvas.getContext("2d");
-
-        ctx.beginPath();
-
-        ctx.arc(
-            20,
-            20,
-            17,
-            0,
-            Math.PI * 2
+    const neonPlayer =
+        createNeonPlayer(
+            scene,
+            150,
+            580
         );
 
-        ctx.fillStyle = "#00aaff";
+    player =
+        neonPlayer.sprite;
 
-        ctx.fill();
-
-        ctx.lineWidth = 2;
-
-        ctx.strokeStyle = "#9deaff";
-
-        ctx.stroke();
-
-        ctx.beginPath();
-
-        ctx.arc(
-            26,
-            14,
-            4,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = "#ffffff";
-
-        ctx.fill();
-
-        scene.textures.addCanvas(
-            textureKey,
-            canvas
-        );
-
-    }
-
-    player.setTexture(textureKey);
-
-
-    playerGlow = scene.add.circle(
-        player.x,
-        player.y,
-        30,
-        0x0088ff,
-        0.10
-    );
-
-    playerGlow.setDepth(5);
+    playerSystem =
+        neonPlayer;
 
 }
-
-
 /* =========================================================
    DATA BITS
 ========================================================= */
