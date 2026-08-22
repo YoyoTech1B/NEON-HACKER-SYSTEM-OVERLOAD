@@ -1022,91 +1022,45 @@ function update() {
 function updatePlayer() {
 
     if (
+        !playerSystem ||
         !gameState.gameStarted ||
         gameState.paused ||
         gameState.levelComplete
     ) {
 
-        player.setVelocity(
-            0,
-            0
-        );
+        if (player) {
+            player.setVelocity(0, 0);
+        }
 
         return;
-
     }
 
 
-    let velocityX = 0;
-    let velocityY = 0;
+    const input = {
+
+        up:
+            cursors.up.isDown ||
+            wasd.up.isDown,
+
+        down:
+            cursors.down.isDown ||
+            wasd.down.isDown,
+
+        left:
+            cursors.left.isDown ||
+            wasd.left.isDown,
+
+        right:
+            cursors.right.isDown ||
+            wasd.right.isDown,
+
+        disabled: false
+
+    };
 
 
-    if (
-        cursors.left.isDown ||
-        wasd.left.isDown
-    ) {
+    playerSystem.update(input);
 
-        velocityX -= 1;
-
-    }
-
-    if (
-        cursors.right.isDown ||
-        wasd.right.isDown
-    ) {
-
-        velocityX += 1;
-
-    }
-
-    if (
-        cursors.up.isDown ||
-        wasd.up.isDown
-    ) {
-
-        velocityY -= 1;
-
-    }
-
-    if (
-        cursors.down.isDown ||
-        wasd.down.isDown
-    ) {
-
-        velocityY += 1;
-
-    }
-
-
-    const length =
-        Math.sqrt(
-            velocityX * velocityX +
-            velocityY * velocityY
-        );
-
-
-    if (length > 0) {
-
-        velocityX /= length;
-        velocityY /= length;
-
-
-        playerDirection.x =
-            velocityX;
-
-        playerDirection.y =
-            velocityY;
-
-    }
-
-
-    player.setVelocity(
-        velocityX * PLAYER_SPEED,
-        velocityY * PLAYER_SPEED
-    );
-
-
-    /* DASH */
 
     if (
         Phaser.Input.Keyboard.JustDown(
@@ -1114,13 +1068,11 @@ function updatePlayer() {
         )
     ) {
 
-        performDash();
+        playerSystem.dash();
 
     }
 
 }
-
-
 /* =========================================================
    DASH
 ========================================================= */
@@ -1187,17 +1139,46 @@ function performDash() {
 function updateKeyboardActions() {
 
     if (
+        !playerSystem ||
+        !gameState.gameStarted ||
+        gameState.paused
+    ) {
+
+        return;
+    }
+
+
+    if (
         Phaser.Input.Keyboard.JustDown(
             wasd.hack
         )
     ) {
 
-        performHack();
+        playerSystem.hack();
+
+        hackMessage.textContent =
+            "ACCESS GRANTED";
+
+        showNotification(
+            "HACK SUCCESS",
+            "System access granted."
+        );
+
+
+        setTimeout(() => {
+
+            if (hackMessage) {
+
+                hackMessage.textContent =
+                    "READY";
+
+            }
+
+        }, 1000);
 
     }
 
 }
-
 
 /* =========================================================
    HACK
