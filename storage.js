@@ -1,49 +1,35 @@
 "use strict";
 
 /* =========================================================
-   NEON HACKER: SYSTEM OVERLOAD
-   SAVE / STORAGE SYSTEM
+   NEON HACKER
+   SAVE SYSTEM
 ========================================================= */
 
 const STORAGE_KEY =
     "neonHackerSystemOverloadSave";
 
 
-/* =========================================================
-   DEFAULT SAVE DATA
-========================================================= */
-
 const DEFAULT_SAVE_DATA = {
 
-    version:
-        1,
+    version: 1,
 
-    level:
-        1,
+    level: 1,
 
-    highestLevel:
-        1,
+    highestLevel: 1,
 
-    totalData:
-        0,
+    totalData: 0,
 
-    crystals:
-        0,
+    crystals: 0,
 
-    deaths:
-        0,
+    deaths: 0,
 
-    playTime:
-        0,
+    playTime: 0,
 
-    soundEnabled:
-        true,
+    soundEnabled: true,
 
-    musicEnabled:
-        true,
+    musicEnabled: true,
 
-    masterVolume:
-        0.4,
+    masterVolume: 0.4,
 
     unlockedLevels: [
         1
@@ -53,14 +39,11 @@ const DEFAULT_SAVE_DATA = {
 
     settings: {
 
-        particles:
-            true,
+        particles: true,
 
-        screenShake:
-            true,
+        screenShake: true,
 
-        fullscreen:
-            false
+        fullscreen: false
 
     }
 
@@ -68,7 +51,7 @@ const DEFAULT_SAVE_DATA = {
 
 
 /* =========================================================
-   STORAGE SYSTEM
+   STORAGE CLASS
 ========================================================= */
 
 class GameStorage {
@@ -82,21 +65,94 @@ class GameStorage {
 
 
     /* =====================================================
-       LOAD SAVE
+       DEFAULT COPY
+    ===================================================== */
+
+    cloneDefault() {
+
+        return JSON.parse(
+
+            JSON.stringify(
+                DEFAULT_SAVE_DATA
+            )
+
+        );
+
+    }
+
+
+    /* =====================================================
+       MERGE
+    ===================================================== */
+
+    mergeData(
+        defaults,
+        saved
+    ) {
+
+        const result = {
+
+            ...defaults,
+
+            ...saved
+
+        };
+
+
+        result.settings = {
+
+            ...defaults.settings,
+
+            ...(saved.settings || {})
+
+        };
+
+
+        if (
+            !Array.isArray(
+                result.unlockedLevels
+            )
+        ) {
+
+            result.unlockedLevels =
+                [1];
+
+        }
+
+
+        if (
+            !Array.isArray(
+                result.completedLevels
+            )
+        ) {
+
+            result.completedLevels =
+                [];
+
+        }
+
+
+        return result;
+
+    }
+
+
+    /* =====================================================
+       LOAD
     ===================================================== */
 
     load() {
 
         try {
 
-            const savedData =
+            const raw =
                 localStorage.getItem(
                     STORAGE_KEY
                 );
 
 
             if (
-                !savedData
+                !raw
             ) {
 
                 return this.cloneDefault();
@@ -104,15 +160,18 @@ class GameStorage {
             }
 
 
-            const parsedData =
+            const saved =
                 JSON.parse(
-                    savedData
+                    raw
                 );
 
 
             return this.mergeData(
+
                 this.cloneDefault(),
-                parsedData
+
+                saved
+
             );
 
         } catch (
@@ -120,7 +179,7 @@ class GameStorage {
         ) {
 
             console.error(
-                "SAVE LOAD ERROR:",
+                "Could not load save:",
                 error
             );
 
@@ -158,7 +217,7 @@ class GameStorage {
         ) {
 
             console.error(
-                "SAVE ERROR:",
+                "Could not save:",
                 error
             );
 
@@ -171,85 +230,7 @@ class GameStorage {
 
 
     /* =====================================================
-       CLONE DEFAULT
-    ===================================================== */
-
-    cloneDefault() {
-
-        return JSON.parse(
-
-            JSON.stringify(
-                DEFAULT_SAVE_DATA
-            )
-
-        );
-
-    }
-
-
-    /* =====================================================
-       MERGE DATA
-    ===================================================== */
-
-    mergeData(
-        defaults,
-        saved
-    ) {
-
-        const result =
-            {
-
-                ...defaults,
-
-                ...saved
-
-            };
-
-
-        result.settings =
-            {
-
-                ...defaults.settings,
-
-                ...(
-                    saved.settings ||
-                    {}
-                )
-
-            };
-
-
-        if (
-            !Array.isArray(
-                result.unlockedLevels
-            )
-        ) {
-
-            result.unlockedLevels =
-                [1];
-
-        }
-
-
-        if (
-            !Array.isArray(
-                result.completedLevels
-            )
-        ) {
-
-            result.completedLevels =
-                [];
-
-        }
-
-
-        return result;
-
-    }
-
-
-    /* =====================================================
-       CURRENT LEVEL
+       LEVEL
     ===================================================== */
 
     getLevel() {
@@ -263,8 +244,34 @@ class GameStorage {
         level
     ) {
 
+        level =
+            Math.max(
+                1,
+                Math.min(
+                    100,
+                    Number(level)
+                )
+            );
+
+
         this.data.level =
             level;
+
+
+        if (
+            level >
+            this.data.highestLevel
+        ) {
+
+            this.data.highestLevel =
+                level;
+
+        }
+
+
+        this.unlockLevel(
+            level
+        );
 
 
         this.save();
@@ -284,7 +291,7 @@ class GameStorage {
 
 
     /* =====================================================
-       UNLOCK LEVEL
+       UNLOCK
     ===================================================== */
 
     unlockLevel(
@@ -321,17 +328,15 @@ class GameStorage {
 
 
     /* =====================================================
-       CHECK IF LEVEL IS UNLOCKED
+       IS UNLOCKED
     ===================================================== */
 
     isLevelUnlocked(
         level
     ) {
 
-        return (
-            this.data.unlockedLevels.includes(
-                level
-            )
+        return this.data.unlockedLevels.includes(
+            level
         );
 
     }
@@ -359,12 +364,8 @@ class GameStorage {
         }
 
 
-        const nextLevel =
-            level + 1;
-
-
         this.unlockLevel(
-            nextLevel
+            level + 1
         );
 
 
@@ -372,9 +373,8 @@ class GameStorage {
             stats.data
         ) {
 
-            this.addData(
-                stats.data
-            );
+            this.data.totalData +=
+                Number(stats.data);
 
         }
 
@@ -383,9 +383,8 @@ class GameStorage {
             stats.crystals
         ) {
 
-            this.addCrystals(
-                stats.crystals
-            );
+            this.data.crystals +=
+                Number(stats.crystals);
 
         }
 
@@ -396,38 +395,8 @@ class GameStorage {
 
 
     /* =====================================================
-       CHECK COMPLETION
+       DATA
     ===================================================== */
-
-    isLevelComplete(
-        level
-    ) {
-
-        return (
-            this.data.completedLevels.includes(
-                level
-            )
-        );
-
-    }
-
-
-    /* =====================================================
-       DATA BITS
-    ===================================================== */
-
-    addData(
-        amount = 1
-    ) {
-
-        this.data.totalData +=
-            amount;
-
-
-        this.save();
-
-    }
-
 
     getData() {
 
@@ -436,22 +405,22 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       CRYSTALS
-    ===================================================== */
-
-    addCrystals(
+    addData(
         amount = 1
     ) {
 
-        this.data.crystals +=
-            amount;
+        this.data.totalData +=
+            Number(amount);
 
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       CRYSTALS
+    ===================================================== */
 
     getCrystals() {
 
@@ -460,19 +429,22 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       DEATHS
-    ===================================================== */
+    addCrystals(
+        amount = 1
+    ) {
 
-    addDeath() {
-
-        this.data.deaths++;
+        this.data.crystals +=
+            Number(amount);
 
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       DEATHS
+    ===================================================== */
 
     getDeaths() {
 
@@ -481,22 +453,18 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       PLAY TIME
-    ===================================================== */
+    addDeath() {
 
-    addPlayTime(
-        seconds
-    ) {
-
-        this.data.playTime +=
-            seconds;
-
+        this.data.deaths++;
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       PLAY TIME
+    ===================================================== */
 
     getPlayTime() {
 
@@ -505,22 +473,22 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       SOUND
-    ===================================================== */
-
-    setSoundEnabled(
-        enabled
+    addPlayTime(
+        seconds
     ) {
 
-        this.data.soundEnabled =
-            enabled;
+        this.data.playTime +=
+            Number(seconds);
 
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       SOUND
+    ===================================================== */
 
     isSoundEnabled() {
 
@@ -529,22 +497,22 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       MUSIC
-    ===================================================== */
-
-    setMusicEnabled(
+    setSoundEnabled(
         enabled
     ) {
 
-        this.data.musicEnabled =
-            enabled;
+        this.data.soundEnabled =
+            Boolean(enabled);
 
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       MUSIC
+    ===================================================== */
 
     isMusicEnabled() {
 
@@ -553,31 +521,22 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       VOLUME
-    ===================================================== */
-
-    setVolume(
-        volume
+    setMusicEnabled(
+        enabled
     ) {
 
-        this.data.masterVolume =
-            Math.max(
-
-                0,
-
-                Math.min(
-                    1,
-                    volume
-                )
-
-            );
+        this.data.musicEnabled =
+            Boolean(enabled);
 
 
         this.save();
 
     }
 
+
+    /* =====================================================
+       VOLUME
+    ===================================================== */
 
     getVolume() {
 
@@ -586,36 +545,18 @@ class GameStorage {
     }
 
 
-    /* =====================================================
-       SETTINGS
-    ===================================================== */
-
-    setSetting(
-        setting,
-        value
+    setVolume(
+        volume
     ) {
 
-        if (
-            !Object.prototype.hasOwnProperty.call(
-                this.data.settings,
-                setting
-            )
-        ) {
-
-            console.warn(
-                "Unknown setting:",
-                setting
+        this.data.masterVolume =
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    Number(volume)
+                )
             );
-
-            return;
-
-        }
-
-
-        this.data.settings[
-            setting
-        ] =
-            value;
 
 
         this.save();
@@ -623,19 +564,64 @@ class GameStorage {
     }
 
 
+    /* =====================================================
+       SETTINGS
+    ===================================================== */
+
     getSetting(
-        setting
+        name
     ) {
 
         return this.data.settings[
-            setting
+            name
         ];
 
     }
 
 
+    setSetting(
+        name,
+        value
+    ) {
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                this.data.settings,
+                name
+            )
+        ) {
+
+            this.data.settings[
+                name
+            ] =
+                value;
+
+            this.save();
+
+        }
+
+    }
+
+
     /* =====================================================
-       EXPORT SAVE
+       GET EVERYTHING
+    ===================================================== */
+
+    getAll() {
+
+        return JSON.parse(
+
+            JSON.stringify(
+                this.data
+            )
+
+        );
+
+    }
+
+
+    /* =====================================================
+       EXPORT
     ===================================================== */
 
     exportSave() {
@@ -654,7 +640,7 @@ class GameStorage {
 
 
     /* =====================================================
-       IMPORT SAVE
+       IMPORT
     ===================================================== */
 
     importSave(
@@ -663,7 +649,7 @@ class GameStorage {
 
         try {
 
-            const importedData =
+            const imported =
                 JSON.parse(
                     saveString
                 );
@@ -674,7 +660,7 @@ class GameStorage {
 
                     this.cloneDefault(),
 
-                    importedData
+                    imported
 
                 );
 
@@ -689,7 +675,7 @@ class GameStorage {
         ) {
 
             console.error(
-                "IMPORT ERROR:",
+                "Save import failed:",
                 error
             );
 
@@ -702,7 +688,7 @@ class GameStorage {
 
 
     /* =====================================================
-       RESET SAVE
+       RESET
     ===================================================== */
 
     reset() {
@@ -715,28 +701,11 @@ class GameStorage {
 
     }
 
-
-    /* =====================================================
-       GET ALL SAVE DATA
-    ===================================================== */
-
-    getAll() {
-
-        return JSON.parse(
-
-            JSON.stringify(
-                this.data
-            )
-
-        );
-
-    }
-
 }
 
 
 /* =========================================================
-   GLOBAL STORAGE INSTANCE
+   GLOBAL SAVE SYSTEM
 ========================================================= */
 
 const gameStorage =
