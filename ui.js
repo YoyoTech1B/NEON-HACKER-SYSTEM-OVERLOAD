@@ -2,22 +2,183 @@
 
 /* =========================================================
    NEON HACKER
-   UI EFFECTS SYSTEM
+   UI SYSTEM
 ========================================================= */
-
 
 class GameUI {
 
     constructor() {
 
-        this.notifications =
-            [];
+        this.notifications = [];
+
+        this.injectStyles();
 
     }
 
 
     /* =====================================================
-       NOTIFICATION
+       CREATE UI CSS
+    ===================================================== */
+
+    injectStyles() {
+
+        if (
+            document.getElementById(
+                "neon-game-ui-styles"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+
+        style.id =
+            "neon-game-ui-styles";
+
+
+        style.textContent = `
+
+            .game-notification {
+                position: fixed;
+                top: 90px;
+                left: 50%;
+                transform: translate(-50%, -20px);
+                background: rgba(5, 15, 30, 0.94);
+                border: 1px solid #00e5ff;
+                box-shadow: 0 0 25px rgba(0,229,255,.35);
+                color: white;
+                padding: 14px 22px;
+                border-radius: 10px;
+                font-family: monospace;
+                z-index: 99999;
+                opacity: 0;
+                transition: .3s ease;
+                min-width: 260px;
+                text-align: center;
+                pointer-events: none;
+            }
+
+            .game-notification.visible {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            .game-notification strong {
+                display: block;
+                color: #00e5ff;
+                font-size: 17px;
+                margin-bottom: 5px;
+            }
+
+            .game-notification span {
+                color: #b8dfff;
+                font-size: 13px;
+            }
+
+            .level-announcement {
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0,0,0,.75);
+                z-index: 99998;
+                opacity: 0;
+                transition: .4s ease;
+                pointer-events: none;
+            }
+
+            .level-announcement.visible {
+                opacity: 1;
+            }
+
+            .level-announcement-content {
+                text-align: center;
+                font-family: monospace;
+            }
+
+            .level-announcement-content span {
+                display: block;
+                color: #00e5ff;
+                font-size: 18px;
+                letter-spacing: 5px;
+            }
+
+            .level-announcement-content strong {
+                display: block;
+                color: white;
+                font-size: 42px;
+                margin-top: 10px;
+                text-shadow: 0 0 25px #00e5ff;
+            }
+
+            .damage-flash {
+                position: fixed;
+                inset: 0;
+                background: rgba(255,0,50,.3);
+                z-index: 99997;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity .1s;
+            }
+
+            .damage-flash.active {
+                opacity: 1;
+            }
+
+            .system-message {
+                position: fixed;
+                left: 50%;
+                bottom: 70px;
+                transform: translate(-50%, 20px);
+                font-family: monospace;
+                color: #00e5ff;
+                background: rgba(0,0,0,.85);
+                border: 1px solid #00e5ff;
+                padding: 10px 18px;
+                border-radius: 8px;
+                z-index: 99996;
+                opacity: 0;
+                transition: .3s ease;
+            }
+
+            .system-message.visible {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+
+            .screen-shake {
+                animation: neonScreenShake .35s;
+            }
+
+            @keyframes neonScreenShake {
+                0% { transform: translate(0); }
+                20% { transform: translate(-5px, 3px); }
+                40% { transform: translate(5px, -3px); }
+                60% { transform: translate(-4px, 2px); }
+                80% { transform: translate(3px, -2px); }
+                100% { transform: translate(0); }
+            }
+
+        `;
+
+
+        document.head.appendChild(
+            style
+        );
+
+    }
+
+
+    /* =====================================================
+       NOTIFY
     ===================================================== */
 
     notify(
@@ -35,10 +196,34 @@ class GameUI {
             "game-notification";
 
 
-        notification.innerHTML =
+        const strong =
+            document.createElement(
+                "strong"
+            );
 
-            `<strong>${title}</strong>` +
-            `<span>${message}</span>`;
+
+        strong.textContent =
+            title;
+
+
+        const span =
+            document.createElement(
+                "span"
+            );
+
+
+        span.textContent =
+            message;
+
+
+        notification.appendChild(
+            strong
+        );
+
+
+        notification.appendChild(
+            span
+        );
 
 
         document.body.appendChild(
@@ -47,7 +232,6 @@ class GameUI {
 
 
         requestAnimationFrame(
-
             () => {
 
                 notification.classList.add(
@@ -55,12 +239,10 @@ class GameUI {
                 );
 
             }
-
         );
 
 
         setTimeout(
-
             () => {
 
                 notification.classList.remove(
@@ -69,28 +251,23 @@ class GameUI {
 
 
                 setTimeout(
-
                     () => {
 
                         notification.remove();
 
                     },
-
-                    300
-
+                    350
                 );
 
             },
-
-            3000
-
+            2500
         );
 
     }
 
 
     /* =====================================================
-       LEVEL MESSAGE
+       LEVEL ANNOUNCEMENT
     ===================================================== */
 
     showLevel(
@@ -108,15 +285,53 @@ class GameUI {
             "level-announcement";
 
 
-        overlay.innerHTML =
+        const content =
+            document.createElement(
+                "div"
+            );
 
-            `<div class="level-announcement-content">` +
 
-            `<span>LEVEL ${String(level).padStart(2, "0")}</span>` +
+        content.className =
+            "level-announcement-content";
 
-            `<strong>${name}</strong>` +
 
-            `</div>`;
+        const number =
+            document.createElement(
+                "span"
+            );
+
+
+        number.textContent =
+            "LEVEL " +
+            String(level).padStart(
+                2,
+                "0"
+            );
+
+
+        const title =
+            document.createElement(
+                "strong"
+            );
+
+
+        title.textContent =
+            name;
+
+
+        content.appendChild(
+            number
+        );
+
+
+        content.appendChild(
+            title
+        );
+
+
+        overlay.appendChild(
+            content
+        );
 
 
         document.body.appendChild(
@@ -124,23 +339,18 @@ class GameUI {
         );
 
 
-        setTimeout(
-
+        requestAnimationFrame(
             () => {
 
                 overlay.classList.add(
                     "visible"
                 );
 
-            },
-
-            100
-
+            }
         );
 
 
         setTimeout(
-
             () => {
 
                 overlay.classList.remove(
@@ -149,21 +359,16 @@ class GameUI {
 
 
                 setTimeout(
-
                     () => {
 
                         overlay.remove();
 
                     },
-
-                    500
-
+                    450
                 );
 
             },
-
-            2500
-
+            1800
         );
 
     }
@@ -185,7 +390,6 @@ class GameUI {
             scene.add.text(
 
                 x,
-
                 y,
 
                 text,
@@ -196,12 +400,19 @@ class GameUI {
                         "monospace",
 
                     fontSize:
-                        "16px",
+                        "17px",
 
                     fontStyle:
                         "bold",
 
-                    color
+                    color:
+                        color,
+
+                    stroke:
+                        "#000000",
+
+                    strokeThickness:
+                        3
 
                 }
 
@@ -214,7 +425,7 @@ class GameUI {
 
 
         floating.setDepth(
-            50
+            200
         );
 
 
@@ -224,13 +435,16 @@ class GameUI {
                 floating,
 
             y:
-                y - 45,
+                y - 50,
 
             alpha:
                 0,
 
             duration:
                 700,
+
+            ease:
+                "Power2",
 
             onComplete:
                 () => {
@@ -266,7 +480,6 @@ class GameUI {
 
 
         requestAnimationFrame(
-
             () => {
 
                 flash.classList.add(
@@ -274,20 +487,28 @@ class GameUI {
                 );
 
             }
-
         );
 
 
         setTimeout(
-
             () => {
 
-                flash.remove();
+                flash.classList.remove(
+                    "active"
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        flash.remove();
+
+                    },
+                    100
+                );
 
             },
-
-            350
-
+            120
         );
 
     }
@@ -320,23 +541,18 @@ class GameUI {
         );
 
 
-        setTimeout(
-
+        requestAnimationFrame(
             () => {
 
                 element.classList.add(
                     "visible"
                 );
 
-            },
-
-            50
-
+            }
         );
 
 
         setTimeout(
-
             () => {
 
                 element.classList.remove(
@@ -345,52 +561,52 @@ class GameUI {
 
 
                 setTimeout(
-
                     () => {
 
                         element.remove();
 
                     },
-
                     300
-
                 );
 
             },
-
-            2000
-
+            1800
         );
 
     }
 
 
     /* =====================================================
-       SHAKE SCREEN
+       SCREEN SHAKE
     ===================================================== */
 
-    shake(
-        element =
-            document.body
-    ) {
+    shake() {
 
-        element.classList.add(
+        if (
+            document.body.classList.contains(
+                "screen-shake"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        document.body.classList.add(
             "screen-shake"
         );
 
 
         setTimeout(
-
             () => {
 
-                element.classList.remove(
+                document.body.classList.remove(
                     "screen-shake"
                 );
 
             },
-
             400
-
         );
 
     }
@@ -399,7 +615,7 @@ class GameUI {
 
 
 /* =========================================================
-   GLOBAL UI SYSTEM
+   GLOBAL UI
 ========================================================= */
 
 const gameUI =
