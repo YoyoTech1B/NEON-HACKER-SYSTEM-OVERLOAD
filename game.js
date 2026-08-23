@@ -1141,7 +1141,7 @@ function updateSystems(delta) {
 
     /* ITEM COLLISION */
 
-  mainScene.itemManager.items.slice().forEach(
+mainScene.itemManager.items.forEach(
 
         item => {
 
