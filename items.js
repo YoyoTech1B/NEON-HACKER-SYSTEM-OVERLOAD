@@ -5,160 +5,75 @@
    ITEM SYSTEM
 ========================================================= */
 
-
-class NeonItem {
-
-    constructor(
-        scene,
-        x,
-        y,
-        type = "data"
-    ) {
-
-        this.scene =
-            scene;
-
-        this.type =
-            type;
-
-        this.value =
-            this.getValue();
-
-        this.create();
-
-    }
-
-
-    /* =====================================================
-       ITEM VALUES
-    ===================================================== */
-
-    getValue() {
-
-        const values = {
-
-            data: 1,
-
-            energy: 25,
-
-            speed: 1,
-
-            shield: 1,
-
-            key: 1,
-
-            crystal: 5
-
-        };
-
-
-        return (
-            values[
-                this.type
-            ] ||
-            1
-        );
-
-    }
-
-
-    /* =====================================================
-       COLOR
-    ===================================================== */
-
-    getColor() {
-
-        const colors = {
-
-            data:
-                0x00d9ff,
-
-            energy:
-                0x00ff88,
-
-            speed:
-                0xffff00,
-
-            shield:
-                0xa855f7,
-
-            key:
-                0xffa500,
-
-            crystal:
-                0xff00ff
-
-        };
-
-
-        return (
-            colors[
-                this.type
-            ] ||
-            0xffffff
-        );
-
-    }
-
-
-    /* =====================================================
-       CREATE
-    ===================================================== */
-
-    create() {
-
-        const color =
-            this.getColor();
-
-
-        this.sprite =
-            this.scene.add.rectangle(
-
-                this.x,
-
-                this.y,
-
-                20,
-
-                20,
-
-                color
-
-            );
-
-
-        this.sprite.x =
-            arguments[0] ?
-            undefined :
-            this.sprite.x;
-
-    }
-
-
-}
-
-
-/* =========================================================
-   ITEM MANAGER
-========================================================= */
-
 class ItemManager {
 
-    constructor(
-        scene
-    ) {
+    constructor(scene) {
 
-        this.scene =
-            scene;
+        this.scene = scene;
 
-        this.group =
-            scene.physics.add.group();
-
-        this.items =
-            [];
+        this.items = [];
 
     }
 
+
+    /* =====================================================
+       ITEM DATA
+    ===================================================== */
+
+    getItemData(type) {
+
+        const data = {
+
+            data: {
+                color: 0x00e5ff,
+                value: 1,
+                size: 18
+            },
+
+            energy: {
+                color: 0x00ff88,
+                value: 25,
+                size: 20
+            },
+
+            speed: {
+                color: 0xffff00,
+                value: 1,
+                size: 20
+            },
+
+            shield: {
+                color: 0xa855f7,
+                value: 1,
+                size: 22
+            },
+
+            key: {
+                color: 0xffa500,
+                value: 1,
+                size: 20
+            },
+
+            crystal: {
+                color: 0xff00ff,
+                value: 5,
+                size: 22
+            }
+
+        };
+
+
+        return (
+            data[type] ||
+            data.data
+        );
+
+    }
+
+
+    /* =====================================================
+       CREATE ITEM
+    ===================================================== */
 
     createItem(
         x,
@@ -166,59 +81,21 @@ class ItemManager {
         type = "data"
     ) {
 
-        const colors = {
-
-            data:
-                0x00d9ff,
-
-            energy:
-                0x00ff88,
-
-            speed:
-                0xffff00,
-
-            shield:
-                0xa855f7,
-
-            key:
-                0xffa500,
-
-            crystal:
-                0xff00ff
-
-        };
-
-
-        const values = {
-
-            data: 1,
-
-            energy: 25,
-
-            speed: 1,
-
-            shield: 1,
-
-            key: 1,
-
-            crystal: 5
-
-        };
+        const data =
+            this.getItemData(type);
 
 
         const item =
-            this.scene.add.rectangle(
+            this.scene.add.circle(
 
                 x,
-
                 y,
 
-                20,
+                data.size,
 
-                20,
+                data.color,
 
-                colors[type] ||
-                0xffffff
+                1
 
             );
 
@@ -233,6 +110,16 @@ class ItemManager {
         );
 
 
+        item.body.setImmovable(
+            true
+        );
+
+
+        item.setDepth(
+            10
+        );
+
+
         item.setData(
             "itemType",
             type
@@ -241,20 +128,45 @@ class ItemManager {
 
         item.setData(
             "value",
-            values[type] ||
-            1
+            data.value
         );
 
 
-        this.group.add(
-            item
+        item.setData(
+            "baseY",
+            y
         );
 
 
-        this.items.push(
-            item
+        /* GLOW */
+
+        const glow =
+            this.scene.add.circle(
+
+                x,
+                y,
+
+                data.size + 10,
+
+                data.color,
+
+                0.12
+
+            );
+
+
+        glow.setDepth(
+            9
         );
 
+
+        item.setData(
+            "glow",
+            glow
+        );
+
+
+        /* FLOAT */
 
         this.scene.tweens.add({
 
@@ -271,10 +183,15 @@ class ItemManager {
                 true,
 
             repeat:
-                -1
+                -1,
+
+            ease:
+                "Sine.easeInOut"
 
         });
 
+
+        /* ROTATION */
 
         this.scene.tweens.add({
 
@@ -285,12 +202,17 @@ class ItemManager {
                 360,
 
             duration:
-                2500,
+                1800,
 
             repeat:
                 -1
 
         });
+
+
+        this.items.push(
+            item
+        );
 
 
         return item;
@@ -307,6 +229,16 @@ class ItemManager {
         player
     ) {
 
+        if (
+            !item ||
+            !item.active
+        ) {
+
+            return null;
+
+        }
+
+
         const type =
             item.getData(
                 "itemType"
@@ -319,20 +251,13 @@ class ItemManager {
             );
 
 
-        switch (
-            type
-        ) {
+        switch (type) {
 
             case "data":
 
                 return {
-
-                    type:
-                        "data",
-
-                    amount:
-                        value
-
+                    type: "data",
+                    amount: value
                 };
 
 
@@ -342,71 +267,51 @@ class ItemManager {
                     value
                 );
 
-
                 return {
-
-                    type:
-                        "energy",
-
-                    amount:
-                        value
-
+                    type: "energy",
+                    amount: value
                 };
 
 
             case "speed":
 
-                player.speed +=
-                    50;
-
+                player.speed += 30;
 
                 return {
-
-                    type:
-                        "speed",
-
-                    amount:
-                        1
-
+                    type: "speed",
+                    amount: 1
                 };
 
 
             case "shield":
 
                 return {
-
-                    type:
-                        "shield",
-
-                    amount:
-                        1
-
+                    type: "shield",
+                    amount: 1
                 };
 
 
             case "key":
 
                 return {
-
-                    type:
-                        "key",
-
-                    amount:
-                        1
-
+                    type: "key",
+                    amount: 1
                 };
 
 
             case "crystal":
 
                 return {
+                    type: "crystal",
+                    amount: value
+                };
 
-                    type:
-                        "crystal",
 
-                    amount:
-                        value
+            default:
 
+                return {
+                    type: "data",
+                    amount: 1
                 };
 
         }
@@ -418,20 +323,43 @@ class ItemManager {
        DESTROY
     ===================================================== */
 
-    destroyItem(
-        item
-    ) {
+    destroyItem(item) {
 
-        const flash =
+        if (
+            !item ||
+            !item.active
+        ) {
+
+            return;
+
+        }
+
+
+        const glow =
+            item.getData(
+                "glow"
+            );
+
+
+        if (
+            glow
+        ) {
+
+            glow.destroy();
+
+        }
+
+
+        const explosion =
             this.scene.add.circle(
 
                 item.x,
-
                 item.y,
 
-                10,
+                8,
 
-                item.fillColor,
+                item.fillColor ||
+                0xffffff,
 
                 0.8
 
@@ -441,7 +369,7 @@ class ItemManager {
         this.scene.tweens.add({
 
             targets:
-                flash,
+                explosion,
 
             scale:
                 4,
@@ -455,7 +383,7 @@ class ItemManager {
             onComplete:
                 () => {
 
-                    flash.destroy();
+                    explosion.destroy();
 
                 }
 
@@ -467,10 +395,8 @@ class ItemManager {
 
         this.items =
             this.items.filter(
-
-                currentItem =>
-                    currentItem !== item
-
+                current =>
+                    current !== item
             );
 
     }
@@ -483,13 +409,31 @@ class ItemManager {
     clear() {
 
         this.items.forEach(
-
             item => {
 
-                item.destroy();
+                if (
+                    item &&
+                    item.active
+                ) {
+
+                    const glow =
+                        item.getData(
+                            "glow"
+                        );
+
+                    if (
+                        glow
+                    ) {
+
+                        glow.destroy();
+
+                    }
+
+                    item.destroy();
+
+                }
 
             }
-
         );
 
 
