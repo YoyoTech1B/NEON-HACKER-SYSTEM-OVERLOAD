@@ -5,7 +5,6 @@
    BOSS SYSTEM
 ========================================================= */
 
-
 class NeonBoss {
 
     constructor(
@@ -15,11 +14,13 @@ class NeonBoss {
         type = "firewall"
     ) {
 
-        this.scene =
-            scene;
+        this.scene = scene;
 
-        this.type =
-            type;
+        this.x = x;
+
+        this.y = y;
+
+        this.type = type;
 
         this.maxHealth =
             this.getMaxHealth();
@@ -27,14 +28,11 @@ class NeonBoss {
         this.health =
             this.maxHealth;
 
-        this.phase =
-            1;
+        this.phase = 1;
 
-        this.attackTimer =
-            0;
+        this.attackTimer = 0;
 
-        this.active =
-            true;
+        this.active = true;
 
         this.create();
 
@@ -47,27 +45,21 @@ class NeonBoss {
 
     getMaxHealth() {
 
-        const health = {
+        const values = {
 
-            firewall:
-                500,
+            firewall: 500,
 
-            sentinel:
-                750,
+            sentinel: 750,
 
-            core:
-                1000,
+            core: 1000,
 
-            omega:
-                2000
+            omega: 2000
 
         };
 
 
         return (
-            health[
-                this.type
-            ] ||
+            values[this.type] ||
             500
         );
 
@@ -78,25 +70,19 @@ class NeonBoss {
 
         const colors = {
 
-            firewall:
-                0xff3355,
+            firewall: 0xff3355,
 
-            sentinel:
-                0xff7b00,
+            sentinel: 0xff7b00,
 
-            core:
-                0xa855f7,
+            core: 0xa855f7,
 
-            omega:
-                0x00e5ff
+            omega: 0x00e5ff
 
         };
 
 
         return (
-            colors[
-                this.type
-            ] ||
+            colors[this.type] ||
             0xff3355
         );
 
@@ -107,25 +93,19 @@ class NeonBoss {
 
         const sizes = {
 
-            firewall:
-                55,
+            firewall: 55,
 
-            sentinel:
-                65,
+            sentinel: 65,
 
-            core:
-                75,
+            core: 75,
 
-            omega:
-                100
+            omega: 100
 
         };
 
 
         return (
-            sizes[
-                this.type
-            ] ||
+            sizes[this.type] ||
             55
         );
 
@@ -146,26 +126,39 @@ class NeonBoss {
             this.getColor();
 
 
+        this.glow =
+            this.scene.add.circle(
+
+                this.x,
+                this.y,
+
+                size + 30,
+
+                color,
+
+                0.12
+
+            );
+
+
+        this.glow.setDepth(
+            11
+        );
+
+
         this.sprite =
             this.scene.add.circle(
 
                 this.x,
-
                 this.y,
 
                 size,
 
                 color,
 
-                0.9
+                1
 
             );
-
-
-        this.sprite.x =
-            arguments[0] ?
-            undefined :
-            this.sprite.x;
 
 
         this.scene.physics.add.existing(
@@ -178,9 +171,8 @@ class NeonBoss {
         );
 
 
-        this.sprite.setData(
-            "bossSystem",
-            this
+        this.sprite.body.setImmovable(
+            true
         );
 
 
@@ -189,114 +181,13 @@ class NeonBoss {
         );
 
 
+        this.sprite.setData(
+            "bossSystem",
+            this
+        );
+
+
         this.createHealthBar();
-
-        this.createGlow();
-
-    }
-
-
-    /* =====================================================
-       HEALTH BAR
-    ===================================================== */
-
-    createHealthBar() {
-
-        this.healthBackground =
-            this.scene.add.rectangle(
-
-                this.sprite.x,
-
-                this.sprite.y - 100,
-
-                160,
-
-                14,
-
-                0x111111
-
-            );
-
-
-        this.healthBar =
-            this.scene.add.rectangle(
-
-                this.sprite.x - 80,
-
-                this.sprite.y - 100,
-
-                160,
-
-                14,
-
-                this.getColor()
-
-            );
-
-
-        this.healthBar.setOrigin(
-            0,
-            0.5
-        );
-
-
-        this.healthText =
-            this.scene.add.text(
-
-                this.sprite.x,
-
-                this.sprite.y - 130,
-
-                this.type.toUpperCase(),
-
-                {
-
-                    fontFamily:
-                        "monospace",
-
-                    fontSize:
-                        "16px",
-
-                    color:
-                        "#ffffff"
-
-                }
-
-            );
-
-
-        this.healthText.setOrigin(
-            0.5
-        );
-
-    }
-
-
-    /* =====================================================
-       GLOW
-    ===================================================== */
-
-    createGlow() {
-
-        this.glow =
-            this.scene.add.circle(
-
-                this.sprite.x,
-
-                this.sprite.y,
-
-                this.getSize() + 30,
-
-                this.getColor(),
-
-                0.12
-
-            );
-
-
-        this.glow.setDepth(
-            11
-        );
 
 
         this.scene.tweens.add({
@@ -320,6 +211,119 @@ class NeonBoss {
                 -1
 
         });
+
+
+        this.scene.tweens.add({
+
+            targets:
+                this.sprite,
+
+            angle:
+                360,
+
+            duration:
+                5000,
+
+            repeat:
+                -1
+
+        });
+
+    }
+
+
+    /* =====================================================
+       HEALTH BAR
+    ===================================================== */
+
+    createHealthBar() {
+
+        this.healthBackground =
+            this.scene.add.rectangle(
+
+                this.x,
+
+                this.y - 100,
+
+                180,
+
+                14,
+
+                0x111111,
+
+                0.9
+
+            );
+
+
+        this.healthBar =
+            this.scene.add.rectangle(
+
+                this.x - 90,
+
+                this.y - 100,
+
+                180,
+
+                14,
+
+                this.getColor(),
+
+                1
+
+            );
+
+
+        this.healthBar.setOrigin(
+            0,
+            0.5
+        );
+
+
+        this.healthText =
+            this.scene.add.text(
+
+                this.x,
+
+                this.y - 130,
+
+                this.type.toUpperCase(),
+
+                {
+
+                    fontFamily:
+                        "monospace",
+
+                    fontSize:
+                        "16px",
+
+                    color:
+                        "#ffffff",
+
+                    fontStyle:
+                        "bold"
+
+                }
+
+            );
+
+
+        this.healthText.setOrigin(
+            0.5
+        );
+
+
+        this.healthBackground.setDepth(
+            100
+        );
+
+        this.healthBar.setDepth(
+            101
+        );
+
+        this.healthText.setDepth(
+            101
+        );
 
     }
 
@@ -348,27 +352,21 @@ class NeonBoss {
 
         this.updatePhase();
 
-
         this.updateHealthBar();
+
+        this.updateUIPosition();
 
 
         if (
-            this.attackTimer >
+            this.attackTimer >=
             this.getAttackSpeed()
         ) {
 
-            this.attackTimer =
-                0;
+            this.attackTimer = 0;
 
-
-            this.attack(
-                player
-            );
+            this.attack(player);
 
         }
-
-
-        this.updateUIPosition();
 
     }
 
@@ -391,6 +389,11 @@ class NeonBoss {
 
             this.phase = 2;
 
+            gameUI.notify(
+                "BOSS PHASE 2",
+                "The system is adapting."
+            );
+
         }
 
 
@@ -400,6 +403,11 @@ class NeonBoss {
         ) {
 
             this.phase = 3;
+
+            gameUI.notify(
+                "BOSS PHASE 3",
+                "CRITICAL OVERLOAD."
+            );
 
         }
 
@@ -439,13 +447,12 @@ class NeonBoss {
        ATTACK
     ===================================================== */
 
-    attack(
-        player
-    ) {
+    attack(player) {
 
         if (
             !player ||
-            !player.sprite
+            !player.sprite ||
+            !player.sprite.active
         ) {
 
             return;
@@ -453,47 +460,79 @@ class NeonBoss {
         }
 
 
-        this.scene.tweens.add({
-
-            targets:
-                this.sprite,
-
-            scale:
-                1.25,
-
-            duration:
-                120,
-
-            yoyo:
-                true
-
-        });
-
-
-        const damage =
-            10 +
-            (
-                this.phase * 5
-            );
-
-
         const distance =
             Phaser.Math.Distance.Between(
 
                 this.sprite.x,
-
                 this.sprite.y,
 
                 player.sprite.x,
-
                 player.sprite.y
 
             );
 
 
+        /* VISUAL ATTACK */
+
+        const beam =
+            this.scene.add.line(
+
+                0,
+                0,
+
+                this.sprite.x,
+                this.sprite.y,
+
+                player.sprite.x,
+                player.sprite.y,
+
+                this.getColor(),
+                0.8
+
+            );
+
+
+        beam.setLineWidth(
+            4
+        );
+
+
+        beam.setDepth(
+            14
+        );
+
+
+        this.scene.tweens.add({
+
+            targets:
+                beam,
+
+            alpha:
+                0,
+
+            duration:
+                250,
+
+            onComplete:
+                () => {
+
+                    beam.destroy();
+
+                }
+
+        });
+
+
+        /* DAMAGE */
+
         if (
-            distance < 220
+            distance < 500
         ) {
+
+            const damage =
+                10 +
+                this.phase * 5;
+
 
             player.takeDamage(
                 damage
@@ -525,28 +564,36 @@ class NeonBoss {
             amount;
 
 
-        this.sprite.setFillStyle(
-            0xffffff
+        gameUI.floatingText(
+
+            this.scene,
+
+            this.sprite.x,
+
+            this.sprite.y,
+
+            "-" + amount,
+
+            "#ff3355"
+
         );
 
 
-        setTimeout(
-            () => {
+        this.scene.tweens.add({
 
-                if (
-                    this.sprite &&
-                    this.sprite.active
-                ) {
+            targets:
+                this.sprite,
 
-                    this.sprite.setFillStyle(
-                        this.getColor()
-                    );
+            alpha:
+                0.35,
 
-                }
+            duration:
+                70,
 
-            },
-            80
-        );
+            yoyo:
+                true
+
+        });
 
 
         if (
@@ -568,7 +615,7 @@ class NeonBoss {
 
 
     /* =====================================================
-       HEALTH BAR UPDATE
+       HEALTH BAR
     ===================================================== */
 
     updateHealthBar() {
@@ -582,28 +629,34 @@ class NeonBoss {
         }
 
 
-        const percent =
+        const percentage =
             Math.max(
-
                 0,
-
                 this.health /
                 this.maxHealth
-
             );
 
 
         this.healthBar.width =
-            160 * percent;
+            180 * percentage;
 
     }
 
 
     /* =====================================================
-       UI POSITION
+       POSITION UI
     ===================================================== */
 
     updateUIPosition() {
+
+        if (
+            !this.sprite
+        ) {
+
+            return;
+
+        }
+
 
         this.glow.x =
             this.sprite.x;
@@ -620,7 +673,7 @@ class NeonBoss {
 
 
         this.healthBar.x =
-            this.sprite.x - 80;
+            this.sprite.x - 90;
 
         this.healthBar.y =
             this.sprite.y - 100;
@@ -641,15 +694,22 @@ class NeonBoss {
 
     destroy() {
 
-        this.active =
-            false;
+        if (
+            !this.active
+        ) {
+
+            return;
+
+        }
+
+
+        this.active = false;
 
 
         const explosion =
             this.scene.add.circle(
 
                 this.sprite.x,
-
                 this.sprite.y,
 
                 this.getSize(),
@@ -673,7 +733,7 @@ class NeonBoss {
                 0,
 
             duration:
-                1000,
+                900,
 
             onComplete:
                 () => {
@@ -685,15 +745,49 @@ class NeonBoss {
         });
 
 
-        this.glow.destroy();
+        if (
+            this.glow
+        ) {
 
-        this.healthBackground.destroy();
+            this.glow.destroy();
 
-        this.healthBar.destroy();
+        }
 
-        this.healthText.destroy();
 
-        this.sprite.destroy();
+        if (
+            this.healthBackground
+        ) {
+
+            this.healthBackground.destroy();
+
+        }
+
+
+        if (
+            this.healthBar
+        ) {
+
+            this.healthBar.destroy();
+
+        }
+
+
+        if (
+            this.healthText
+        ) {
+
+            this.healthText.destroy();
+
+        }
+
+
+        if (
+            this.sprite
+        ) {
+
+            this.sprite.destroy();
+
+        }
 
     }
 
@@ -706,15 +800,11 @@ class NeonBoss {
 
 class BossManager {
 
-    constructor(
-        scene
-    ) {
+    constructor(scene) {
 
-        this.scene =
-            scene;
+        this.scene = scene;
 
-        this.currentBoss =
-            null;
+        this.currentBoss = null;
 
     }
 
@@ -725,13 +815,15 @@ class BossManager {
         type
     ) {
 
+        this.clear();
+
+
         this.currentBoss =
             new NeonBoss(
 
                 this.scene,
 
                 x,
-
                 y,
 
                 type
@@ -750,7 +842,8 @@ class BossManager {
     ) {
 
         if (
-            this.currentBoss
+            this.currentBoss &&
+            this.currentBoss.active
         ) {
 
             this.currentBoss.update(
