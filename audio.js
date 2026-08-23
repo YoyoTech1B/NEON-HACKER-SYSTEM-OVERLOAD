@@ -1,8 +1,10 @@
+```js
 "use strict";
 
 /* =========================================================
    NEON HACKER
    AUDIO SYSTEM
+   Chrome-safe / user-gesture audio
 ========================================================= */
 
 class AudioSystem {
@@ -23,114 +25,83 @@ class AudioSystem {
 
 
     /* =====================================================
-       INITIALIZE AUDIO
-       MUST BE CALLED AFTER A USER CLICK
+       INITIALIZE
     ===================================================== */
 
     initialize() {
 
-        if (
-            this.context
-        ) {
-
+        if (this.context) {
             return true;
-
         }
-
 
         const AudioContext =
             window.AudioContext ||
             window.webkitAudioContext;
 
-
-        if (
-            !AudioContext
-        ) {
+        if (!AudioContext) {
 
             console.warn(
                 "Web Audio is not supported."
             );
 
-
             this.enabled = false;
 
             return false;
-
         }
-
 
         try {
 
             this.context =
                 new AudioContext();
 
-
             this.masterGain =
                 this.context.createGain();
 
-
             this.masterGain.gain.value =
                 this.volume;
-
 
             this.masterGain.connect(
                 this.context.destination
             );
 
-
             this.ready = true;
-
 
             return true;
 
-        } catch (
-            error
-        ) {
+        } catch (error) {
 
             console.error(
                 "Audio initialization failed:",
                 error
             );
 
-
             this.enabled = false;
 
             return false;
-
         }
-
     }
 
 
     /* =====================================================
-       START AUDIO
-       CALL THIS FROM THE START BUTTON
+       START
+       MUST BE CALLED FROM A USER CLICK
     ===================================================== */
 
     async start() {
 
-        if (
-            !this.enabled
-        ) {
-
+        if (!this.enabled) {
             return false;
-
         }
-
 
         const initialized =
             this.initialize();
-
 
         if (
             !initialized ||
             !this.context
         ) {
-
             return false;
-
         }
-
 
         try {
 
@@ -143,28 +114,21 @@ class AudioSystem {
 
             }
 
-
             console.log(
-                "AUDIO SYSTEM ONLINE"
+                "🔊 AUDIO SYSTEM ONLINE"
             );
-
 
             return true;
 
-        } catch (
-            error
-        ) {
+        } catch (error) {
 
             console.warn(
                 "Audio could not start:",
                 error
             );
 
-
             return false;
-
         }
-
     }
 
 
@@ -185,100 +149,68 @@ class AudioSystem {
             !this.context ||
             !this.masterGain
         ) {
-
             return;
-
         }
-
 
         if (
             this.context.state !==
             "running"
         ) {
-
             return;
-
         }
-
 
         try {
 
             const oscillator =
                 this.context.createOscillator();
 
-
             const gain =
                 this.context.createGain();
-
 
             oscillator.type =
                 type;
 
-
             oscillator.frequency.setValueAtTime(
-
                 frequency,
-
                 this.context.currentTime
-
             );
 
-
             gain.gain.setValueAtTime(
-
                 Math.max(
                     0.0001,
                     volume
                 ),
-
                 this.context.currentTime
-
             );
-
 
             gain.gain.exponentialRampToValueAtTime(
-
                 0.001,
-
                 this.context.currentTime +
                 duration
-
             );
 
-
-            oscillator.connect(
-                gain
-            );
-
+            oscillator.connect(gain);
 
             gain.connect(
                 this.masterGain
             );
 
-
             oscillator.start(
                 this.context.currentTime
             );
 
-
             oscillator.stop(
-
                 this.context.currentTime +
                 duration
-
             );
 
-        } catch (
-            error
-        ) {
+        } catch (error) {
 
             console.warn(
                 "Could not play audio:",
                 error
             );
-
         }
-
     }
 
 
@@ -295,24 +227,16 @@ class AudioSystem {
             0.2
         );
 
+        setTimeout(() => {
 
-        setTimeout(
+            this.playTone(
+                1000,
+                0.12,
+                "sine",
+                0.2
+            );
 
-            () => {
-
-                this.playTone(
-                    1000,
-                    0.12,
-                    "sine",
-                    0.2
-                );
-
-            },
-
-            70
-
-        );
-
+        }, 70);
     }
 
 
@@ -328,7 +252,6 @@ class AudioSystem {
             "sawtooth",
             0.15
         );
-
     }
 
 
@@ -344,7 +267,6 @@ class AudioSystem {
             "square",
             0.2
         );
-
     }
 
 
@@ -355,48 +277,28 @@ class AudioSystem {
     complete() {
 
         const notes = [
-
             523,
             659,
             784,
             1046
-
         ];
 
-
         notes.forEach(
+            (note, index) => {
 
-            (
-                note,
-                index
-            ) => {
+                setTimeout(() => {
 
-                setTimeout(
+                    this.playTone(
+                        note,
+                        0.2,
+                        "sine",
+                        0.2
+                    );
 
-                    () => {
-
-                        this.playTone(
-
-                            note,
-
-                            0.2,
-
-                            "sine",
-
-                            0.2
-
-                        );
-
-                    },
-
-                    index * 120
-
-                );
+                }, index * 120);
 
             }
-
         );
-
     }
 
 
@@ -412,7 +314,6 @@ class AudioSystem {
             "sawtooth",
             0.25
         );
-
     }
 
 
@@ -428,7 +329,6 @@ class AudioSystem {
             "square",
             0.08
         );
-
     }
 
 
@@ -441,75 +341,55 @@ class AudioSystem {
         this.enabled =
             !this.enabled;
 
-
         return this.enabled;
-
     }
 
 
     /* =====================================================
-       SET VOLUME
+       VOLUME
     ===================================================== */
 
-    setVolume(
-        volume
-    ) {
+    setVolume(volume) {
 
         this.volume =
             Math.max(
-
                 0,
-
                 Math.min(
                     1,
                     Number(volume)
                 )
-
             );
 
-
-        if (
-            this.masterGain
-        ) {
+        if (this.masterGain) {
 
             this.masterGain.gain.value =
                 this.volume;
 
         }
-
     }
 
 
     /* =====================================================
-       STOP AUDIO
+       STOP
     ===================================================== */
 
     async stop() {
 
-        if (
-            !this.context
-        ) {
-
+        if (!this.context) {
             return;
-
         }
-
 
         try {
 
             await this.context.suspend();
 
-        } catch (
-            error
-        ) {
+        } catch (error) {
 
             console.warn(
                 "Could not suspend audio:",
                 error
             );
-
         }
-
     }
 
 }
@@ -521,3 +401,67 @@ class AudioSystem {
 
 const gameAudio =
     new AudioSystem();
+
+
+/* =========================================================
+   START AUDIO ON FIRST USER INTERACTION
+========================================================= */
+
+function enableGameAudio() {
+
+    if (!gameAudio.enabled) {
+        return;
+    }
+
+    gameAudio.start();
+
+}
+
+
+/* =========================================================
+   START SYSTEM BUTTON
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const startButton =
+            document.getElementById(
+                "startGameButton"
+            );
+
+        const enterButton =
+            document.getElementById(
+                "startButton"
+            );
+
+
+        if (startButton) {
+
+            startButton.addEventListener(
+                "click",
+                enableGameAudio,
+                {
+                    once: true
+                }
+            );
+
+        }
+
+
+        if (enterButton) {
+
+            enterButton.addEventListener(
+                "click",
+                enableGameAudio,
+                {
+                    once: true
+                }
+            );
+
+        }
+
+    }
+);
+```
