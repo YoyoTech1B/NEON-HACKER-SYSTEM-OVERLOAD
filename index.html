@@ -410,71 +410,49 @@
          LOADING SCREEN CONTROLLER
     ====================================================== -->
 
-    <script>
+   <script>
+(function () {
 
-        window.addEventListener("load", () => {
+    function openGame() {
 
-            const loadingScreen =
-                document.getElementById("loadingScreen");
+        const bootScreen = document.getElementById("bootScreen");
+        const loadingScreen = document.getElementById("loadingScreen");
+        const loadingText = document.getElementById("loadingText");
+        const bootProgress = document.getElementById("bootProgress");
 
-            const bootScreen =
-                document.getElementById("bootScreen");
+        if (loadingText) {
+            loadingText.textContent = "SYSTEM READY";
+        }
 
-            const loadingText =
-                document.getElementById("loadingText");
+        if (bootProgress) {
+            bootProgress.style.width = "100%";
+        }
 
-            const bootProgress =
-                document.getElementById("bootProgress");
-
-
-            if (loadingText) {
-
-                loadingText.textContent =
-                    "SYSTEM READY";
-
-            }
-
-
-            if (bootProgress) {
-
-                bootProgress.style.width =
-                    "100%";
-
-            }
-
-
-            if (!loadingScreen) {
-
-                return;
-
-            }
-
-
-setTimeout(() => {
-
-    loadingScreen.style.opacity = "0";
-
-    setTimeout(() => {
-
-        loadingScreen.style.display = "none";
+        if (loadingScreen) {
+            loadingScreen.style.display = "none";
+        }
 
         if (bootScreen) {
             bootScreen.style.opacity = "0";
+            bootScreen.style.pointerEvents = "none";
+
+            setTimeout(function () {
+                bootScreen.style.display = "none";
+            }, 600);
         }
 
-        setTimeout(() => {
+    }
 
-            if (bootScreen) {
-                bootScreen.style.display = "none";
-            }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(openGame, 1500);
+        });
+    } else {
+        setTimeout(openGame, 1500);
+    }
 
-        }, 500);
-
-    }, 500);
-
-}, 1000);
-
-    </script>
+})();
+</script>
 
 
 </body>
