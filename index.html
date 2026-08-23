@@ -318,66 +318,46 @@
 <script src="ui.js"></script>
 <script src="storage.js"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-    const button =
-        document.getElementById("startGameButton");
+<script src="player.js"></script>
+<script src="levels.js"></script>
+<script src="enemies.js"></script>
+<script src="items.js"></script>
+<script src="bosses.js"></script>
+<script src="audio.js"></script>
+<script src="ui.js"></script>
+<script src="storage.js"></script>
+
+<script src="game.js"></script>
+
+<script>
+window.addEventListener("load", () => {
 
     const loadingScreen =
-        document.getElementById("loadingScreen");
-
-    const loadingText =
-        document.getElementById("loadingText");
-
-    button.addEventListener("click", () => {
-
-        /* Browser now allows audio */
-
-        if (
-            window.gameAudio &&
-            typeof gameAudio.resume === "function"
-        ) {
-
-gameAudio.start();
-
-        }
-
-        loadingText.textContent =
-            "SYSTEM ONLINE";
-
-        button.style.display =
-            "none";
-
-        /* Start Phaser */
-
-        const script =
-            document.createElement("script");
-
-        script.src =
-            "game.js";
-
-        document.body.appendChild(
-            script
+        document.getElementById(
+            "loadingScreen"
         );
 
-        /* Hide loading screen */
+    if (!loadingScreen) {
+
+        return;
+
+    }
+
+    setTimeout(() => {
+
+        loadingScreen.style.opacity =
+            "0";
 
         setTimeout(() => {
 
-            loadingScreen.style.opacity =
-                "0";
+            loadingScreen.style.display =
+                "none";
 
-            setTimeout(() => {
+        }, 500);
 
-                loadingScreen.style.display =
-                    "none";
-
-            }, 500);
-
-        }, 800);
-
-    });
+    }, 1000);
 
 });
 </script>
