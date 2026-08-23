@@ -1,6 +1,9 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -13,70 +16,100 @@
         content="#020812"
     >
 
-    <title>
-        NEON HACKER: SYSTEM OVERLOAD
-    </title>
+    <title>NEON HACKER: SYSTEM OVERLOAD</title>
 
     <link
         rel="stylesheet"
         href="style.css"
     >
-<link rel="icon" type="image/png" href="favicon.png">
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="favicon.png"
+    >
+
 </head>
 
 <body>
 
-    <!-- BOOT SCREEN -->
+    <!-- =====================================================
+         BOOT / LOADING SCREEN
+    ====================================================== -->
+
     <div id="bootScreen">
+
         <div class="boot-panel">
+
             <div class="boot-logo">
                 ⚡
             </div>
-<div id="loadingScreen">
 
- <div id="loadingScreen">
+            <div id="loadingScreen">
 
-    <div class="loading-icon">
-        ⚡
-    </div>
+                <div class="loading-icon">
+                    ⚡
+                </div>
 
-    <div class="loading-bar">
-        <div class="loading-progress"></div>
-    </div>
+                <div class="loading-bar">
+                    <div
+                        class="loading-progress"
+                        id="loadingProgress"
+                    ></div>
+                </div>
 
-</div>
+            </div>
 
-    <h1>NEON HACKER</h1>
+            <h1>
+                NEON HACKER
+            </h1>
 
-    <h2>SYSTEM OVERLOAD</h2>
+            <h2>
+                SYSTEM OVERLOAD
+            </h2>
 
-    <p id="loadingText">SYSTEM READY</p>
+            <p id="loadingText">
+                SYSTEM READY
+            </p>
 
-    <button id="startGameButton">
-        START SYSTEM
-    </button>
+            <button
+                id="startGameButton"
+                type="button"
+            >
+                START SYSTEM
+            </button>
 
-</div>
             <div class="boot-progress">
+
                 <div id="bootProgress"></div>
+
             </div>
 
         </div>
+
     </div>
 
 
-    <!-- MAIN GAME -->
+    <!-- =====================================================
+         MAIN GAME
+    ====================================================== -->
+
     <main id="app">
 
-        <!-- HEADER -->
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
         <header class="topbar">
 
             <div class="brand">
+
                 <span class="brand-icon">
                     ⚡
                 </span>
 
                 <div>
+
                     <strong>
                         NEON HACKER
                     </strong>
@@ -84,15 +117,20 @@
                     <small>
                         SYSTEM OVERLOAD
                     </small>
+
                 </div>
+
             </div>
 
 
             <div class="level-display">
+
                 LEVEL
+
                 <span id="levelNumber">
                     01
                 </span>
+
             </div>
 
 
@@ -107,16 +145,24 @@
         </header>
 
 
-        <!-- GAME AREA -->
+        <!-- =================================================
+             GAME AREA
+        ================================================== -->
+
         <section id="gameShell">
 
             <div id="gameContainer"></div>
 
-            <!-- START SCREEN -->
+
+            <!-- =================================================
+                 START SCREEN
+            ================================================== -->
+
             <div
                 id="startScreen"
                 class="game-overlay"
             >
+
                 <div class="overlay-panel">
 
                     <div class="overlay-icon">
@@ -142,14 +188,19 @@
                     </button>
 
                 </div>
+
             </div>
 
 
-            <!-- PAUSE SCREEN -->
+            <!-- =================================================
+                 PAUSE SCREEN
+            ================================================== -->
+
             <div
                 id="pauseScreen"
                 class="game-overlay hidden"
             >
+
                 <div class="overlay-panel">
 
                     <h2>
@@ -177,14 +228,19 @@
                     </button>
 
                 </div>
+
             </div>
 
 
-            <!-- COMPLETE SCREEN -->
+            <!-- =================================================
+                 COMPLETE SCREEN
+            ================================================== -->
+
             <div
                 id="completeScreen"
                 class="game-overlay hidden"
             >
+
                 <div class="overlay-panel">
 
                     <div class="overlay-icon">
@@ -203,16 +259,20 @@
 
                         <div>
                             DATA:
+
                             <strong id="completeData">
                                 0/0
                             </strong>
+
                         </div>
 
                         <div>
                             ENERGY:
+
                             <strong id="completeEnergy">
                                 100%
                             </strong>
+
                         </div>
 
                     </div>
@@ -226,20 +286,26 @@
                     </button>
 
                 </div>
+
             </div>
 
         </section>
 
 
-        <!-- HUD -->
+        <!-- =================================================
+             HUD
+        ================================================== -->
+
         <footer class="hud">
 
             <div class="hud-item">
+
                 <span>
                     DATA
                 </span>
 
                 <strong>
+
                     <span id="dataCount">
                         0
                     </span>
@@ -249,25 +315,33 @@
                     <span id="dataTotal">
                         0
                     </span>
+
                 </strong>
+
             </div>
 
 
             <div class="hud-item">
+
                 <span>
                     ENERGY
                 </span>
 
                 <strong>
+
                     <span id="energyCount">
                         100
                     </span>
+
                     %
+
                 </strong>
+
             </div>
 
 
             <div class="hud-item controls-info">
+
                 <span>
                     MOVE
                 </span>
@@ -275,10 +349,12 @@
                 <strong>
                     WASD / ARROWS
                 </strong>
+
             </div>
 
 
             <div class="hud-item controls-info">
+
                 <span>
                     DASH
                 </span>
@@ -286,80 +362,115 @@
                 <strong>
                     SPACE
                 </strong>
+
             </div>
 
         </footer>
 
     </main>
-    
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-<script src="player.js"></script>
-<script src="levels.js"></script>
 
-<script src="enemies.js"></script>
-<script src="items.js"></script>
-<script src="bosses.js"></script>
+    <!-- =====================================================
+         PHASER
+    ====================================================== -->
 
-<script src="audio.js"></script>
-<script src="ui.js"></script>
-<script src="storage.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-<script src="game.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+    <!-- =====================================================
+         GAME SYSTEMS
+         IMPORTANT: EACH FILE IS LOADED ONLY ONCE
+    ====================================================== -->
 
-<script src="player.js"></script>
-<script src="levels.js"></script>
-<script src="enemies.js"></script>
-<script src="items.js"></script>
-<script src="bosses.js"></script>
-<script src="audio.js"></script>
-<script src="ui.js"></script>
-<script src="storage.js"></script>
+    <script src="player.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+    <script src="levels.js"></script>
 
-<script src="player.js"></script>
-<script src="levels.js"></script>
-<script src="enemies.js"></script>
-<script src="items.js"></script>
-<script src="bosses.js"></script>
-<script src="audio.js"></script>
-<script src="ui.js"></script>
-<script src="storage.js"></script>
+    <script src="enemies.js"></script>
 
-<script src="game.js"></script>
+    <script src="items.js"></script>
 
-<script>
-window.addEventListener("load", () => {
+    <script src="bosses.js"></script>
 
-    const loadingScreen =
-        document.getElementById(
-            "loadingScreen"
-        );
+    <script src="audio.js"></script>
 
-    if (!loadingScreen) {
+    <script src="ui.js"></script>
 
-        return;
+    <script src="storage.js"></script>
 
-    }
 
-    setTimeout(() => {
+    <!-- =====================================================
+         MAIN GAME
+    ====================================================== -->
 
-        loadingScreen.style.opacity =
-            "0";
+    <script src="game.js"></script>
 
-        setTimeout(() => {
 
-            loadingScreen.style.display =
-                "none";
+    <!-- =====================================================
+         LOADING SCREEN CONTROLLER
+    ====================================================== -->
 
-        }, 500);
+    <script>
 
-    }, 1000);
+        window.addEventListener("load", () => {
 
-});
-</script>
+            const loadingScreen =
+                document.getElementById("loadingScreen");
+
+            const bootScreen =
+                document.getElementById("bootScreen");
+
+            const loadingText =
+                document.getElementById("loadingText");
+
+            const bootProgress =
+                document.getElementById("bootProgress");
+
+
+            if (loadingText) {
+
+                loadingText.textContent =
+                    "SYSTEM READY";
+
+            }
+
+
+            if (bootProgress) {
+
+                bootProgress.style.width =
+                    "100%";
+
+            }
+
+
+            if (!loadingScreen) {
+
+                return;
+
+            }
+
+
+            setTimeout(() => {
+
+                loadingScreen.style.opacity =
+                    "0";
+
+
+                setTimeout(() => {
+
+                    loadingScreen.style.display =
+                        "none";
+
+                }, 500);
+
+            }, 1000);
+
+        });
+
+    </script>
+
+
 </body>
+
 </html>
+```
