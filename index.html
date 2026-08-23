@@ -450,22 +450,29 @@
             }
 
 
-            setTimeout(() => {
+setTimeout(() => {
 
-                loadingScreen.style.opacity =
-                    "0";
+    loadingScreen.style.opacity = "0";
 
+    setTimeout(() => {
 
-                setTimeout(() => {
+        loadingScreen.style.display = "none";
 
-                    loadingScreen.style.display =
-                        "none";
+        if (bootScreen) {
+            bootScreen.style.opacity = "0";
+        }
 
-                }, 500);
+        setTimeout(() => {
 
-            }, 1000);
+            if (bootScreen) {
+                bootScreen.style.display = "none";
+            }
 
-        });
+        }, 500);
+
+    }, 500);
+
+}, 1000);
 
     </script>
 
