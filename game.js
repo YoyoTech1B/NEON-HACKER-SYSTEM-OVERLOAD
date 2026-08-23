@@ -1141,7 +1141,7 @@ function updateSystems(delta) {
 
     /* ITEM COLLISION */
 
-    mainScene.itemManager.items.forEach(
+  mainScene.itemManager.items.slice().forEach(
 
         item => {
 
@@ -1315,21 +1315,31 @@ function updateSystems(delta) {
     );
 
 
-    /* CHECK LEVEL */
+    /* =====================================================
+   CHECK LEVEL
+===================================================== */
+
+if (
+    !mainScene.levelCompleting &&
+    !mainScene.playerDead
+) {
 
     const enemiesAlive =
         mainScene.enemyManager.enemies.filter(
-
             enemy =>
+                enemy &&
                 enemy.sprite &&
                 enemy.sprite.active
-
         ).length;
 
 
+    const boss =
+        mainScene.bossManager.currentBoss;
+
+
     const bossAlive =
-        mainScene.bossManager.currentBoss &&
-        mainScene.bossManager.currentBoss.active;
+        boss &&
+        boss.active;
 
 
     if (
@@ -1342,7 +1352,6 @@ function updateSystems(delta) {
     }
 
 }
-
 
 /* =========================================================
    COLLECT ITEM
