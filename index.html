@@ -5,422 +5,291 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        content="width=device-width, initial-scale=1.0"
     >
-
-    <title>NEON HACKER: SYSTEM OVERLOAD</title>
 
     <meta
-        name="description"
-        content="NEON HACKER: SYSTEM OVERLOAD — enter the system, hack the impossible, and survive the overload."
+        name="theme-color"
+        content="#020812"
     >
 
-    <meta name="theme-color" content="#050816">
+    <title>
+        NEON HACKER: SYSTEM OVERLOAD
+    </title>
 
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Phaser Game Engine -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"
-        defer>
-    </script>
-
-    <!-- Our Game -->
-    <script src="player.js"></script>
-<script src="game.js"></script>
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
-    <!-- =========================================
-         GAME BOOT SCREEN
-    ========================================== -->
-
+    <!-- BOOT SCREEN -->
     <div id="bootScreen">
+        <div class="boot-panel">
 
-        <div class="boot-grid"></div>
-
-        <div class="boot-content">
-
-            <div class="boot-symbol">
+            <div class="boot-logo">
                 ⚡
-            </div>
-
-            <div class="boot-label">
-                SYSTEM INITIALIZATION
             </div>
 
             <h1>
                 NEON HACKER
             </h1>
 
-            <h2>
+            <p>
                 SYSTEM OVERLOAD
-            </h2>
+            </p>
 
-            <div class="boot-line"></div>
-
-            <div id="bootStatus">
-                CONNECTING TO SYSTEM...
+            <div class="boot-line">
+                <span>
+                    INITIALIZING...
+                </span>
             </div>
 
             <div class="boot-progress">
-                <div id="bootProgressBar"></div>
-            </div>
-
-            <div class="boot-version">
-                SYSTEM // ONLINE
+                <div id="bootProgress"></div>
             </div>
 
         </div>
-
     </div>
 
 
-    <!-- =========================================
-         MAIN GAME INTERFACE
-    ========================================== -->
+    <!-- MAIN GAME -->
+    <main id="app">
 
-    <main id="gameWrapper">
+        <!-- HEADER -->
+        <header class="topbar">
 
-        <!-- Phaser places the game here -->
-        <div id="gameContainer"></div>
+            <div class="brand">
+                <span class="brand-icon">
+                    ⚡
+                </span>
 
-
-        <!-- =====================================
-             TOP HUD
-        ====================================== -->
-
-        <div id="gameHUD">
-
-            <div class="hud-left">
-
-                <div class="hud-card">
-
-                    <span class="hud-icon">💎</span>
-
-                    <div>
-                        <span class="hud-label">
-                            DATA
-                        </span>
-
-                        <strong id="dataCount">
-                            0
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <div class="hud-card">
-
-                    <span class="hud-icon">⚡</span>
-
-                    <div>
-                        <span class="hud-label">
-                            ENERGY
-                        </span>
-
-                        <strong id="energyCount">
-                            100
-                        </strong>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="hud-center">
-
-                <div class="level-display">
-
-                    <span>
-                        LEVEL
-                    </span>
-
-                    <strong id="levelNumber">
-                        01
+                <div>
+                    <strong>
+                        NEON HACKER
                     </strong>
 
+                    <small>
+                        SYSTEM OVERLOAD
+                    </small>
                 </div>
-
             </div>
 
 
-            <div class="hud-right">
-
-                <button
-                    id="pauseButton"
-                    class="hud-button"
-                    type="button"
-                    aria-label="Pause game"
-                >
-                    ❚❚
-                </button>
-
+            <div class="level-display">
+                LEVEL
+                <span id="levelNumber">
+                    01
+                </span>
             </div>
 
-        </div>
-
-
-        <!-- =====================================
-             HACKING INTERFACE
-        ====================================== -->
-
-        <div id="hackInterface">
-
-            <div class="hack-header">
-                <span>⌁</span>
-                SYSTEM ACCESS
-                <span>⌁</span>
-            </div>
-
-            <div id="hackMessage">
-                READY
-            </div>
 
             <button
-                id="hackButton"
+                id="pauseButton"
+                class="icon-button"
                 type="button"
             >
-                HACK
+                ⏸
             </button>
 
-        </div>
+        </header>
 
 
-        <!-- =====================================
-             LEVEL INTRO
-        ====================================== -->
+        <!-- GAME AREA -->
+        <section id="gameShell">
 
-        <div id="levelIntro">
+            <div id="gameContainer"></div>
 
-            <div class="intro-line">
-                SYSTEM // CONNECTION ESTABLISHED
-            </div>
-
-            <h2 id="introTitle">
-                THE COMPUTER WAKES UP
-            </h2>
-
-            <p id="introDescription">
-                Your connection has been detected.
-                Enter the system.
-            </p>
-
-            <button
-                id="startLevelButton"
-                type="button"
+            <!-- START SCREEN -->
+            <div
+                id="startScreen"
+                class="game-overlay"
             >
-                ENTER SYSTEM
-            </button>
+                <div class="overlay-panel">
 
-        </div>
-
-
-        <!-- =====================================
-             PAUSE MENU
-        ====================================== -->
-
-        <div id="pauseMenu">
-
-            <div class="menu-panel">
-
-                <div class="menu-tag">
-                    SYSTEM PAUSED
-                </div>
-
-                <h2>
-                    PAUSED
-                </h2>
-
-                <button
-                    id="resumeButton"
-                    type="button"
-                >
-                    RESUME
-                </button>
-
-                <button
-                    id="restartButton"
-                    type="button"
-                >
-                    RESTART LEVEL
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- =====================================
-             LEVEL COMPLETE
-        ====================================== -->
-
-        <div id="levelComplete">
-
-            <div class="complete-panel">
-
-                <div class="complete-icon">
-                    ✓
-                </div>
-
-                <div class="complete-tag">
-                    SYSTEM SUCCESS
-                </div>
-
-                <h2>
-                    LEVEL COMPLETE
-                </h2>
-
-                <div class="complete-stats">
-
-                    <div>
-                        <span>DATA</span>
-                        <strong id="completeData">
-                            0
-                        </strong>
+                    <div class="overlay-icon">
+                        ⚡
                     </div>
 
-                    <div>
-                        <span>TIME</span>
-                        <strong id="completeTime">
-                            00:00
-                        </strong>
+                    <h2>
+                        THE COMPUTER WAKES UP
+                    </h2>
+
+                    <p>
+                        Collect all Data Bits,
+                        avoid security drones,
+                        and reach the exit portal.
+                    </p>
+
+                    <button
+                        id="startButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        ENTER SYSTEM
+                    </button>
+
+                </div>
+            </div>
+
+
+            <!-- PAUSE SCREEN -->
+            <div
+                id="pauseScreen"
+                class="game-overlay hidden"
+            >
+                <div class="overlay-panel">
+
+                    <h2>
+                        SYSTEM PAUSED
+                    </h2>
+
+                    <p>
+                        Your connection is waiting.
+                    </p>
+
+                    <button
+                        id="resumeButton"
+                        class="primary-button"
+                        type="button"
+                    >
+                        RESUME
+                    </button>
+
+                    <button
+                        id="restartButton"
+                        class="secondary-button"
+                        type="button"
+                    >
+                        RESTART LEVEL
+                    </button>
+
+                </div>
+            </div>
+
+
+            <!-- COMPLETE SCREEN -->
+            <div
+                id="completeScreen"
+                class="game-overlay hidden"
+            >
+                <div class="overlay-panel">
+
+                    <div class="overlay-icon">
+                        ✓
                     </div>
 
-                </div>
+                    <h2>
+                        LEVEL COMPLETE
+                    </h2>
 
-                <button
-                    id="nextLevelButton"
-                    type="button"
-                >
-                    NEXT LEVEL →
-                </button>
+                    <p>
+                        SYSTEM ACCESS GRANTED
+                    </p>
 
-            </div>
+                    <div class="complete-stats">
 
-        </div>
+                        <div>
+                            DATA:
+                            <strong id="completeData">
+                                0/0
+                            </strong>
+                        </div>
 
+                        <div>
+                            ENERGY:
+                            <strong id="completeEnergy">
+                                100%
+                            </strong>
+                        </div>
 
-        <!-- =====================================
-             MOBILE CONTROLS
-        ====================================== -->
-
-        <div id="mobileControls">
-
-            <div class="mobile-left">
-
-                <button
-                    class="control-button"
-                    id="moveUp"
-                    type="button"
-                >
-                    ▲
-                </button>
-
-                <div class="control-row">
+                    </div>
 
                     <button
-                        class="control-button"
-                        id="moveLeft"
+                        id="nextButton"
+                        class="primary-button"
                         type="button"
                     >
-                        ◀
-                    </button>
-
-                    <button
-                        class="control-button"
-                        id="moveDown"
-                        type="button"
-                    >
-                        ▼
-                    </button>
-
-                    <button
-                        class="control-button"
-                        id="moveRight"
-                        type="button"
-                    >
-                        ▶
+                        NEXT LEVEL
                     </button>
 
                 </div>
-
             </div>
 
-
-            <div class="mobile-right">
-
-                <button
-                    class="action-button hack-control"
-                    id="mobileHack"
-                    type="button"
-                >
-                    HACK
-                </button>
-
-                <button
-                    class="action-button dash-control"
-                    id="mobileDash"
-                    type="button"
-                >
-                    DASH
-                </button>
-
-            </div>
-
-        </div>
+        </section>
 
 
-        <!-- =====================================
-             SYSTEM NOTIFICATION
-        ====================================== -->
+        <!-- HUD -->
+        <footer class="hud">
 
-        <div id="systemNotification">
+            <div class="hud-item">
+                <span>
+                    DATA
+                </span>
 
-            <span id="notificationIcon">
-                ⚡
-            </span>
+                <strong>
+                    <span id="dataCount">
+                        0
+                    </span>
 
-            <div>
+                    /
 
-                <strong id="notificationTitle">
-                    SYSTEM
+                    <span id="dataTotal">
+                        0
+                    </span>
                 </strong>
-
-                <p id="notificationText">
-                    Connection established.
-                </p>
-
             </div>
 
-        </div>
+
+            <div class="hud-item">
+                <span>
+                    ENERGY
+                </span>
+
+                <strong>
+                    <span id="energyCount">
+                        100
+                    </span>
+                    %
+                </strong>
+            </div>
+
+
+            <div class="hud-item controls-info">
+                <span>
+                    MOVE
+                </span>
+
+                <strong>
+                    WASD / ARROWS
+                </strong>
+            </div>
+
+
+            <div class="hud-item controls-info">
+                <span>
+                    DASH
+                </span>
+
+                <strong>
+                    SPACE
+                </strong>
+            </div>
+
+        </footer>
 
     </main>
 
 
-    <!-- =========================================
-         NO JAVASCRIPT MESSAGE
-    ========================================== -->
+    <!-- PHASER -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-    <noscript>
-
-        <div class="no-script">
-
-            <h1>
-                JavaScript Required
-            </h1>
-
-            <p>
-                NEON HACKER: SYSTEM OVERLOAD requires
-                JavaScript to run.
-            </p>
-
-        </div>
-
-    </noscript>
+    <!-- GAME FILES -->
+    <script src="player.js"></script>
+    <script src="levels.js"></script>
+    <script src="game.js"></script>
 
 </body>
 </html>
