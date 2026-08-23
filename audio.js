@@ -5,28 +5,26 @@
    AUDIO SYSTEM
 ========================================================= */
 
-
 class AudioSystem {
 
     constructor() {
 
-        this.enabled =
-            true;
+        this.enabled = true;
 
-        this.volume =
-            0.4;
+        this.volume = 0.4;
 
-        this.context =
-            null;
+        this.context = null;
 
-        this.masterGain =
-            null;
+        this.masterGain = null;
+
+        this.ready = false;
 
     }
 
 
     /* =====================================================
-       INITIALIZE
+       INITIALIZE AUDIO
+       MUST BE CALLED AFTER A USER CLICK
     ===================================================== */
 
     initialize() {
@@ -35,7 +33,7 @@ class AudioSystem {
             this.context
         ) {
 
-            return;
+            return true;
 
         }
 
@@ -49,48 +47,121 @@ class AudioSystem {
             !AudioContext
         ) {
 
-            this.enabled =
-                false;
+            console.warn(
+                "Web Audio is not supported."
+            );
 
-            return;
+
+            this.enabled = false;
+
+            return false;
 
         }
 
 
-        this.context =
-            new AudioContext();
+        try {
+
+            this.context =
+                new AudioContext();
 
 
-        this.masterGain =
-            this.context.createGain();
+            this.masterGain =
+                this.context.createGain();
 
 
-        this.masterGain.gain.value =
-            this.volume;
+            this.masterGain.gain.value =
+                this.volume;
 
 
-        this.masterGain.connect(
+            this.masterGain.connect(
+                this.context.destination
+            );
 
-            this.context.destination
 
-        );
+            this.ready = true;
+
+
+            return true;
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Audio initialization failed:",
+                error
+            );
+
+
+            this.enabled = false;
+
+            return false;
+
+        }
 
     }
 
 
     /* =====================================================
-       RESUME
+       START AUDIO
+       CALL THIS FROM THE START BUTTON
     ===================================================== */
 
-    resume() {
+    async start() {
 
         if (
-            this.context &&
-            this.context.state ===
-            "suspended"
+            !this.enabled
         ) {
 
-            this.context.resume();
+            return false;
+
+        }
+
+
+        const initialized =
+            this.initialize();
+
+
+        if (
+            !initialized ||
+            !this.context
+        ) {
+
+            return false;
+
+        }
+
+
+        try {
+
+            if (
+                this.context.state ===
+                "suspended"
+            ) {
+
+                await this.context.resume();
+
+            }
+
+
+            console.log(
+                "AUDIO SYSTEM ONLINE"
+            );
+
+
+            return true;
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "Audio could not start:",
+                error
+            );
+
+
+            return false;
 
         }
 
@@ -109,7 +180,10 @@ class AudioSystem {
     ) {
 
         if (
-            !this.enabled
+            !this.enabled ||
+            !this.ready ||
+            !this.context ||
+            !this.masterGain
         ) {
 
             return;
@@ -117,72 +191,99 @@ class AudioSystem {
         }
 
 
-        this.initialize();
+        if (
+            this.context.state !==
+            "running"
+        ) {
+
+            return;
+
+        }
 
 
-        this.resume();
+        try {
+
+            const oscillator =
+                this.context.createOscillator();
 
 
-        const oscillator =
-            this.context.createOscillator();
+            const gain =
+                this.context.createGain();
 
 
-        const gain =
-            this.context.createGain();
+            oscillator.type =
+                type;
 
 
-        oscillator.type =
-            type;
+            oscillator.frequency.setValueAtTime(
+
+                frequency,
+
+                this.context.currentTime
+
+            );
 
 
-        oscillator.frequency.value =
-            frequency;
+            gain.gain.setValueAtTime(
+
+                Math.max(
+                    0.0001,
+                    volume
+                ),
+
+                this.context.currentTime
+
+            );
 
 
-        gain.gain.setValueAtTime(
+            gain.gain.exponentialRampToValueAtTime(
 
-            volume,
+                0.001,
 
-            this.context.currentTime
+                this.context.currentTime +
+                duration
 
-        );
-
-
-        gain.gain.exponentialRampToValueAtTime(
-
-            0.001,
-
-            this.context.currentTime +
-            duration
-
-        );
+            );
 
 
-        oscillator.connect(
-            gain
-        );
+            oscillator.connect(
+                gain
+            );
 
 
-        gain.connect(
-            this.masterGain
-        );
+            gain.connect(
+                this.masterGain
+            );
 
 
-        oscillator.start();
+            oscillator.start(
+                this.context.currentTime
+            );
 
 
-        oscillator.stop(
+            oscillator.stop(
 
-            this.context.currentTime +
-            duration
+                this.context.currentTime +
+                duration
 
-        );
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "Could not play audio:",
+                error
+            );
+
+        }
 
     }
 
 
     /* =====================================================
-       COLLECT SOUND
+       COLLECT
     ===================================================== */
 
     collect() {
@@ -216,7 +317,7 @@ class AudioSystem {
 
 
     /* =====================================================
-       DASH SOUND
+       DASH
     ===================================================== */
 
     dash() {
@@ -232,7 +333,7 @@ class AudioSystem {
 
 
     /* =====================================================
-       DAMAGE SOUND
+       DAMAGE
     ===================================================== */
 
     damage() {
@@ -248,7 +349,7 @@ class AudioSystem {
 
 
     /* =====================================================
-       COMPLETE SOUND
+       LEVEL COMPLETE
     ===================================================== */
 
     complete() {
@@ -300,7 +401,7 @@ class AudioSystem {
 
 
     /* =====================================================
-       BOSS SOUND
+       BOSS
     ===================================================== */
 
     boss() {
@@ -316,7 +417,7 @@ class AudioSystem {
 
 
     /* =====================================================
-       CLICK SOUND
+       CLICK
     ===================================================== */
 
     click() {
@@ -340,6 +441,7 @@ class AudioSystem {
         this.enabled =
             !this.enabled;
 
+
         return this.enabled;
 
     }
@@ -360,7 +462,7 @@ class AudioSystem {
 
                 Math.min(
                     1,
-                    volume
+                    Number(volume)
                 )
 
             );
@@ -372,6 +474,39 @@ class AudioSystem {
 
             this.masterGain.gain.value =
                 this.volume;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       STOP AUDIO
+    ===================================================== */
+
+    async stop() {
+
+        if (
+            !this.context
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await this.context.suspend();
+
+        } catch (
+            error
+        ) {
+
+            console.warn(
+                "Could not suspend audio:",
+                error
+            );
 
         }
 
